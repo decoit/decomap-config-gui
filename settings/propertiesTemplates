@@ -1,0 +1,90 @@
+#Representing each config Class from Decomap
+
+###########
+#Mappings:
+###########
+SimpleEventMapping
+default eventtype;Array:behavioral-change,cve,botnet-infection,excessive-flows,other,p2p,policy-violation,worm-infection;eventmapping.eventtype=behavioral-change
+default significance;Array:informational,important,critical;eventmapping.significance=important
+default magnitude (in %);int:0,100;eventmapping.magnitude=100
+default confidence (in %);int:0,100;eventmapping.confidence=60
+send discoveredBy;boolean;publish.discoverdby=false
+publish update;boolean;publish.update=false
+default other type definition;String;eventmapping.othertypdef=
+
+SnortEventMapping
+@SimpleEventMapping
+eventmapping p2p;Textblock:list;eventmapping.p2p=
+eventmapping cve;Textblock:list;eventmapping.cve=
+eventmapping botnet infection;Textblock:list;eventmapping.botnet_infection=
+eventmappingworm_infection;Textblock:list;eventmapping.worm_infection=
+eventmapping excessive flows;Textblock:list;eventmapping.excessive_flows=
+eventmapping behavioral change;Textblock:list;eventmapping.behavioral_change=
+eventmapping policy violation;Textblock:list;eventmapping.policy_violation=policy-violation,Potential Corporate Privacy Violation,sdf,Sensitive Data was Transmitted Across the Network,inappropriate-content,Inappropriate Content was Detected,Attempted Information Leak,Attempted Denial of Service
+eventmapping other;Textblock:list;eventmapping.other=icmp-event,Generic ICMP event,default-login-attempt,Attempt to Login By a Default Username and Password,misc-attack,Misc Attack,misc-activity,Misc activity,web-application-attack,Web Application Attack,web-application-activity,Access to a Potentially Vulnerable Web Application,protocol-command-decode,Generic Protocol Command Decode,non-standard-protocol,Detection of a Non-Standard Protocol or Event,denial-of-service,Detection of a Denial of Service Attack,network-scan,Detection of a Network Scan,unusual-client-port-connection,A Client was Using an Unusual,trojan-activity,A Network Trojan was Detected,tcp-connection,A TCP Connection was Detected,system-call-detect,A System Call was Detected,suspicious-login,An Attempted Login Using a Suspicious Username was Detected,suspicious-filename-detect,A Suspicious Filename was Detected,string-detect,A Suspicious String was Detected,shellcode-detect,Executable Code was Detected,rpc-portmap-decode,Decode of an RPC Query,successful-admin,Successful Administrator Privilege Gain,attempted-admin,Attempted Administrator Privilege Gain,successful-user,Successful User Privilege Gain,unsuccessful-user,Unsuccessful User Privilege Gain,attempted-user,Attempted User Privilege Gain,successful-dos,Denial of Service,attempted-dos,successful-recon-largescale,Large Scale Information Leak,successful-recon-limited,Information Leak,attempted-recon,bad-unknown,Potentially Bad Traffic,unknown,Unknown Traffic,not-suspicious,Not Suspicious Traffic
+eventlog p2p;boolean;eventlog.p2p=true
+eventlog cve;boolean;eventlog.cve=true
+eventlog botnet infection;boolean;eventlog.botnet_infection=true
+eventlog behavioral change;boolean;eventlog.behavioral_change=true
+eventlog excessive flows;boolean;eventlog.excessive_flows=true
+eventlog other;boolean;eventlog.other=true
+eventlog policy violation;boolean;eventlog.policy_violation=true
+eventlog worm infectionpsnort;boolean;eventlog.worm_infection=true
+significancemapping critical;String;significancemapping.critical=1
+significancemapping important;String;significancemapping.important=2
+significancemapping informational;String;significancemapping.informational=3,4,0
+
+BasicSimuMapping
+GC minimum ttl (seconds);int;garbagecollector.mttl=40
+
+LdapEventMapping
+@BasicSimuMapping
+ldap server url;String;application.ldap.url=ldap://10.10.100.31:389/dc=decoit,dc=de
+ldap auth;Array:none,simple,strong;application.ldap.auth=simple
+ldap username;String;application.ldap.username=cn=admin,dc=decoit,dc=de
+ldap password;String;application.ldap.password=
+ldap search;String;application.ldap.search=(ou=*)
+ldap attribute;String;application.ldap.attribute=ou
+
+###############
+#Pollings:
+###############
+FilePolling
+logrotate;boolean;logrotate=false
+rotatepattern;String;rotatepattern=
+alertlog filepath;String;filepath=
+precheck;boolean;precheck=true
+
+SocketPolling
+serverport;int;server.port=6666
+
+RadiusFilePolling
+@FilePolling
+radius log accpath;String;radacctDir=/var/log/freeradius/radacct/
+
+RestPollingConfig
+server ip;String;icingaserver.ip=
+filepath;String;icingaserver.filepath=/cgi-bin/icinga/
+server username;String;icingaserver.username=
+server password;String;icingaserver.password=
+loaded logs;int;icingaserver.lognumber=50
+
+FilterListFilePolling
+@FilePolling
+ip blacklist;String;iplist.filterlist=
+is whitelist;boolean;iplist.iswhitelist=false
+
+
+
+
+######################
+PollResultProcessor
+#####################
+
+PollResultProcessor
+enforcement mapping;Matcher;resultprocessor=
+
+IptablesPollResultProcessor
+@PollResultProcessor
+allow mapping;Matcher;allowprocessor=skip
+start script;String;startscript=initialize_rules.sh
